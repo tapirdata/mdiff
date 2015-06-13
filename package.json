@@ -1,0 +1,29 @@
+{
+  "name": "myers-lcs",
+  "version": "0.1.0",
+  "description": "Eugene W. Myers' O(ND) Difference Algorithm",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --compilers coffee:coffee-script/register",
+    "build": "rm -rf lib; coffee -c -b -o lib src",
+    "prepublish": "npm run build"
+  },
+  "author": {
+    "name": "Andreas Riedl",
+    "email": "office@tapirdata.com",
+    "url": "https://github.com/tapirdata"
+  },
+  "repository": {
+    "type": "git",
+    "url": "ssh://and@git.tapirdata.com/data/git/prj/tapirdata/npm/myers-lcs.git"
+  },
+  "license": "ISC",
+  "devDependencies": {
+    "chai": "^3.0.0",
+    "coffee-script": "^1.9.3",
+    "mocha": "^2.2.5"
+  },
+  "dependencies": {
+    "lodash": "^3.9.3"
+  }
+}
