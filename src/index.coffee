@@ -142,10 +142,16 @@ class Lcs
       common
 
 
-a = 'ABCABBAC'.split ''
-b = 'CBABAC'.split ''
+#  a = 'ABCABBAC'.split ''
+#  b = 'CBABAC'.split ''
+#  
+#  lcs = new Lcs a, b
+#  common = lcs.getCommon()
+#  console.log 'common=', common
+#
 
-lcs = new Lcs a, b
-common = lcs.getCommon()
-console.log 'common=', common
+factory = (a, b, options) ->
+  new Lcs a, b, options
+
+module.exports = factory  
 
