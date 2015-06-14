@@ -5,73 +5,147 @@ class Lcs
   constructor: (@a, @b, options) ->
     debug 'Lcs(a=%o b=%o)', @a, @b
     @options = options || {}
-
-  equal: (idxA, idxB) ->
-    @a[idxA] == @b[idxB]
-
-
-class Frame
-  constructor: (@lcs, @aFirst, @bFirst, @aLast, @bLast) ->
-    @aLen = @aLast - @aFirst + 1 
-    @bLen = @bLast - @bFirst + 1 
-    # @firstDelta = @aFirst - @bFirst
-    # @lastDelta = @aLast - @bLast
-    @lenDelta = @bLen - @aLen
-    @totalLen = @aLen + @bLen
-    @deltaOdd = @delta % 2 == 1  
+    
+  equal: (aVal, bVal) ->
+    aVal == bVal
 
 
-  findMiddleSnake: (maxDh) ->
+  findMiddleSnake: (aBegin, aEnd, bBegin, bEnd, maxDh) ->
+    aLen = aEnd - aBegin
+    bLen = bEnd - bBegin
+    lenDelta = bLen - aLen
+    totalLen = aLen + bLen
+    deltaOdd = lenDelta % 2 != 0
+
     contourLen = 2 * maxDh + 1
-    fContours = new Array contourLen 
-    bContours = new Array contourLen 
-    fContours[maxDh + 1] = 0
-    bContours[maxDh - 1] = 0
+    foreContours = new Array contourLen 
+    backContours = new Array contourLen 
+    foreContours[maxDh + 1] = 0
+    backContours[maxDh - 1] = 0
     for d in [0..maxDh]
-      if 0
-        debug 'findMiddleSnake: (f) d=%o fContours=%o', d, fContours
+      if 1
+        debug 'findMiddleSnake: (f) d=%o foreContours=%o', d, foreContours
         for k in [-d..d] by 2
-          dirB = k == -d or (k != d and fContours[maxDh + k - 1] < fContours[maxDh + k + 1])
+          dirB = k == -d or (k != d and foreContours[maxDh + k - 1] < foreContours[maxDh + k + 1])
           preK = if dirB then k + 1 else k - 1
           debug 'findMiddleSnake: (f) k=%o dirB=%o preK=%o', k, dirB, preK
-          preContour = fContours[maxDh + preK]
-          aS = @aFirst + preContour
-          bS = @bFirst + preContour - preK
+          preContour = foreContours[maxDh + preK]
+          aS = aBegin + preContour
+          bS = bBegin + preContour - preK
           if dirB then ++bS else ++aS
           aE = aS
           bE = bS
-          while aE <= @aLast && bE <= @bLast && @lcs.equal aE, bE
+          while aE < aEnd && bE < bEnd && @equal @a[aE], @b[bE]
             ++aE
             ++bE
           debug 'findMiddleSnake: (f) (%o, %o) ... (%o, %o)', aS, bS, aE, bE
-          fContours[maxDh + k] = aE - @aFirst
-          if aE > @aLast and bE > @bLast
-            return
+          foreContours[maxDh + k] = aE - aBegin
+          if deltaOdd
+            backK = k + lenDelta
+            debug 'findMiddleSnake: (f) backK=%o', backK
+            if -d < backK < d
+              backContour = backContours[maxDh + backK]
+              debug 'findMiddleSnake: (f) backK=%o backContour=%o', backK, backContour
+              if aE + backContour >= aEnd
+                return (
+                  d: 2 * d - 1
+                  aS: aS
+                  aE: aE
+                  bS: bS
+                  bE: bE
+                )  
+
+          # if aE >= aEnd and bE >= bEnd
+          #   return
       if 1
-        debug 'findMiddleSnake: (b) d=%o bContours=%o', d, bContours
+        debug 'findMiddleSnake: (b) d=%o backContours=%o', d, backContours
         for k in [-d..d] by 2
-          dirB = k == d or (k != -d and bContours[maxDh + k - 1] > bContours[maxDh + k + 1])
+          dirB = k == d or (k != -d and backContours[maxDh + k - 1] > backContours[maxDh + k + 1])
           preK = if dirB then k - 1 else k + 1
           debug 'findMiddleSnake: (b) k=%o dirB=%o preK=%o', k, dirB, preK
-          preContour = bContours[maxDh + preK]
-          aE = @aLast + 1 - preContour
-          bE = @bLast + 1 - preContour - preK
+          preContour = backContours[maxDh + preK]
+          aE = aEnd - preContour
+          bE = bEnd - preContour - preK
           if dirB then --bE else --aE
           aS = aE
           bS = bE
-          while aS > @aFirst && bS > @bFirst && @lcs.equal aS - 1 , bS - 1
+          while aS > aBegin && bS > bBegin && @equal @a[aS - 1] , @b[bS - 1]
             --aS
             --bS
           debug 'findMiddleSnake: (b) (%o, %o) ... (%o, %o)', aS, bS, aE, bE
-          bContours[maxDh + k] = @aLast + 1 - aS 
-          if aS <= @aFirst and bS <= @bFirst
-            return
-        
-a = 'ABCABBA'.split ''
+          backContours[maxDh + k] = aEnd - aS 
+          if not deltaOdd
+            foreK = k - lenDelta
+            debug 'findMiddleSnake: (b) fore=%o', foreK
+            if -d <= foreK <= d
+              foreContour = foreContours[maxDh + foreK]
+              debug 'findMiddleSnake: (f) foreK=%o foreContour=%o', foreK, foreContour
+              if aS - foreContour <= aBegin
+                return (
+                  d: 2 * d
+                  aS: aS
+                  aE: aE
+                  bS: bS
+                  bE: bE
+                )  
+                return [aS, bS, aE, bE]
+          # if aS <= aBegin and bS <= bBegin
+          #   return
+
+  scan: (aBegin, aEnd, bBegin, bEnd, snakeCb, maxD) ->
+    debug 'scan((%o, %o)...(%o, %o) maxD=%o)', aBegin, bBegin, aEnd, bEnd, maxD
+    aLen = aEnd - aBegin
+    bLen = bEnd - bBegin
+    if not maxD?
+      maxD = aLen + bLen
+    if aLen > 0 and bLen > 0
+      maxDh = Math.ceil maxD / 2
+      ms = @findMiddleSnake aBegin, aEnd, bBegin, bEnd, maxDh
+      debug 'scan: (%o, %o)...(%o, %o) maxD=%o', aBegin, bBegin, aEnd, bEnd, maxD
+      debug 'scan: ms=%o', ms
+      if not ms?
+        return null
+      if ms.d == 0
+        if snakeCb and ms.aE > ms.aS
+          snakeCb ms.aS, ms.aE, ms.bS, ms.bE
+      else if ms.d == 1
+        if snakeCb
+          if aLen < bLen
+            l = ms.aS - aBegin
+          else
+            l = ms.bS - bBegin
+          if l > 0
+            snakeCb aBegin, aBegin + l, bBegin, bBegin + l
+          else  
+          if ms.aE > ms.aS
+            snakeCb ms.aS, ms.aE, ms.bS, ms.bE
+      else
+        @scan aBegin, ms.aS, bBegin, ms.bS, snakeCb
+        debug 'scan: (%o, %o)...(%o, %o) maxD=%o', aBegin, bBegin, aEnd, bEnd, maxD
+        debug 'scan: ms=%o', ms
+        debug 'scan: -> %o %o', @a.slice(ms.aS, ms.aE), @b.slice(ms.bS, ms.bE)
+        if snakeCb and ms.aE > ms.aS
+          snakeCb ms.aS, ms.aE, ms.bS, ms.bE
+        @scan ms.aE, aEnd, ms.bE, bEnd, snakeCb
+      return ms.d
+
+  scanAll: (snakeCb, maxD) ->
+    @scan 0, @a.length, 0, @b.length, snakeCb, maxD
+
+  getCommon: (maxD) ->
+    common = []
+    snakeCb = (aS, aE) =>
+      console.log '%s..%s', aS, aE
+      common = common.concat @a.slice aS, aE
+    d = @scanAll snakeCb, maxD
+    if d?
+      common
+
+
+a = 'ABCABBAC'.split ''
 b = 'CBABAC'.split ''
 
 lcs = new Lcs a, b
-frame = new Frame lcs, 0, 0, a.length - 1, b.length - 1
-frame.findMiddleSnake frame.totalLen
-# frame.findMiddleSnake 3
+common = lcs.getCommon()
+console.log 'common=', common
 
