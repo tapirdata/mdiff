@@ -1,5 +1,5 @@
 {
-  "name": "myers-lcs",
+  "name": "mdiff",
   "version": "0.1.0",
   "description": "Eugene W. Myers' O(ND) Difference Algorithm",
   "main": "index.js",
@@ -15,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "ssh://and@git.tapirdata.com/data/git/prj/tapirdata/npm/myers-lcs.git"
+    "url": "ssh://and@git.tapirdata.com/data/git/prj/tapirdata/npm/myers-diff.git"
   },
   "license": "ISC",
   "devDependencies": {
