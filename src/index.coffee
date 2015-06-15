@@ -89,52 +89,74 @@ class Diff
         k += 2
       ++d  
 
-  scan: (aBegin, aEnd, bBegin, bEnd, snakeCb, maxD) ->
+  scan: (aBegin, aEnd, bBegin, bEnd, commonCb, maxD) ->
     # debug 'scan((%o, %o)...(%o, %o) maxD=%o)', aBegin, bBegin, aEnd, bEnd, maxD
     aLen = aEnd - aBegin
     bLen = bEnd - bBegin
+    if aLen == 0 or bLen == 0
+      return 0
     if not maxD?
       maxD = aLen + bLen
-    if aLen > 0 and bLen > 0
-      maxDh = Math.ceil maxD / 2
-      ms = @findMiddleSnake aBegin, aEnd, bBegin, bEnd, maxDh
+    maxDh = Math.ceil maxD / 2
+    ms = @findMiddleSnake aBegin, aEnd, bBegin, bEnd, maxDh
+    # debug 'scan: (%o, %o)...(%o, %o) maxD=%o', aBegin, bBegin, aEnd, bEnd, maxD
+    # debug 'scan: ms=%o', ms
+    if not ms?
+      return null
+    if ms.d == 0
+      if commonCb and ms.aE > ms.aS
+        commonCb ms.aS, ms.aE, ms.bS, ms.bE
+    else if ms.d == 1
+      if commonCb
+        if aLen < bLen
+          l = ms.aS - aBegin
+        else
+          l = ms.bS - bBegin
+        if l > 0
+          commonCb aBegin, aBegin + l, bBegin, bBegin + l
+        else  
+        if ms.aE > ms.aS
+          commonCb ms.aS, ms.aE, ms.bS, ms.bE
+    else
+      @scan aBegin, ms.aS, bBegin, ms.bS, commonCb
       # debug 'scan: (%o, %o)...(%o, %o) maxD=%o', aBegin, bBegin, aEnd, bEnd, maxD
       # debug 'scan: ms=%o', ms
-      if not ms?
-        return null
-      if ms.d == 0
-        if snakeCb and ms.aE > ms.aS
-          snakeCb ms.aS, ms.aE, ms.bS, ms.bE
-      else if ms.d == 1
-        if snakeCb
-          if aLen < bLen
-            l = ms.aS - aBegin
-          else
-            l = ms.bS - bBegin
-          if l > 0
-            snakeCb aBegin, aBegin + l, bBegin, bBegin + l
-          else  
-          if ms.aE > ms.aS
-            snakeCb ms.aS, ms.aE, ms.bS, ms.bE
-      else
-        @scan aBegin, ms.aS, bBegin, ms.bS, snakeCb
-        # debug 'scan: (%o, %o)...(%o, %o) maxD=%o', aBegin, bBegin, aEnd, bEnd, maxD
-        # debug 'scan: ms=%o', ms
-        # debug 'scan: -> %o %o', @a.slice(ms.aS, ms.aE), @b.slice(ms.bS, ms.bE)
-        if snakeCb and ms.aE > ms.aS
-          snakeCb ms.aS, ms.aE, ms.bS, ms.bE
-        @scan ms.aE, aEnd, ms.bE, bEnd, snakeCb
-      return ms.d
+      # debug 'scan: -> %o %o', @a.slice(ms.aS, ms.aE), @b.slice(ms.bS, ms.bE)
+      if commonCb and ms.aE > ms.aS
+        commonCb ms.aS, ms.aE, ms.bS, ms.bE
+      @scan ms.aE, aEnd, ms.bE, bEnd, commonCb
+    return ms.d
 
-  scanAll: (snakeCb, maxD) ->
-    @scan 0, @a.length, 0, @b.length, snakeCb, maxD
+  scanCommon: (commonCb, maxD) ->
+    @scan 0, @a.length, 0, @b.length, commonCb, maxD
+
+  scanDiff: (diffCb, maxD) ->
+    aIdx = 0
+    bIdx = 0
+    commonCb = (aS, aE, bS, bE) =>
+      if aIdx < aS or bIdx < bS
+        diffCb aIdx, aS, bIdx, bS
+      aIdx = aE
+      bIdx = bE
+    d = @scanCommon commonCb, maxD
+    if d?
+      aLen = @a.length  
+      bLen = @b.length  
+      if aIdx < aLen or bIdx < bLen
+        diffCb aIdx, aLen, bIdx, bLen
+    d     
+
 
   getLcs: (maxD) ->
-    lcs = []
-    snakeCb = (aS, aE) =>
-      console.log '%s..%s', aS, aE
-      lcs = lcs.concat @a.slice aS, aE
-    d = @scanAll snakeCb, maxD
+    isString = @a.constructor == String
+    lcs = if isString then '' else []
+    commonCb = (aS, aE) =>
+      part = @a.slice aS, aE
+      if isString
+        lcs += part
+      else  
+        lcs = lcs.concat part
+    d = @scanCommon commonCb, maxD
     if d?
       lcs
 

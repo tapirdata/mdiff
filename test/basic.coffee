@@ -80,9 +80,21 @@ entries = [
     a: 'ABCABBAC'
     b: 'CBABAC'
   }  
+  {
+    a: 'AXBYCZZD'
+    b: 'ABCD'
+  }  
+  {
+    a: 'ABCD'
+    b: 'AXBYCZZD'
+  }  
+  # {
+  #   a: 'JFHCKJBECH'
+  #   b: 'KACJJCGJE'
+  # }  
 ]
 
-randomList = (options) ->
+randomString = (options) ->
   alp = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
   options or= {}
@@ -104,20 +116,22 @@ randomList = (options) ->
 
 
 randomEntry = (options) ->
-  a = randomList options
-  b = randomList options
+  a = randomString options
+  b = randomString options
   a: a
   b: b
 
-  
-
-check = (entry) ->
-  a = entry.a.split ''
-  b = entry.b.split ''
-  diff = mDiff a, b, entry.options
+checkCommon = (entry, options) ->
+  options or= {}
+  if options.asArray
+    a = entry.a.split ''
+    b = entry.b.split ''
+  else  
+    a = entry.a
+    b = entry.b
   lcsLen = 0
 
-  collector = (aS, aE, bS, bE) ->
+  collect = (aS, aE, bS, bE) ->
     expect(aE).to.be.gt aS
     expect(bE).to.be.gt bS
     expect(aE-aS).to.be.equal bE-bS
@@ -126,24 +140,76 @@ check = (entry) ->
       bIdx = aIdx - aS + bS
       expect(a[aIdx]).to.be.equal b[bIdx]
 
+  diff = mDiff a, b, entry.options
   it "should yield fitting snakes", -> 
-    diff.scanAll collector
+    diff.scanCommon collect
   refLcsLen = simpleLcsLen a, b
   it "should have length #{refLcsLen}", -> 
     expect(lcsLen).to.be.equal refLcsLen
 
 
-describe 'lcs', ->
-  describe 'fix', ->
-    for entry in entries
-      describe "'#{entry.a}', '#{entry.b}'", -> 
-        check entry
+checkDiff = (entry, options) ->
+  options or= {}
+  a = entry.a.split ''
+  b = entry.b.split ''
+  a1 = a.concat [] 
+  aDelta = 0
+  patch = (aS, aE, bS, bE) ->
+    # console.log 'patch a=%s b=%s, a1=%s, aDelta=%s', entry.a, entry.b, a1.join(''), aDelta
+    # console.log 'patch %s...%s -> %s...%s', aS, aE, bS, bE
+    part = b.slice bS, bE
+    aIdx = aS + aDelta
+    a1.splice.apply a1, [aIdx, aE - aS].concat part
+    aDelta += bE + aS - bS - aE 
+    # console.log 'patch a1=%s, aDelta=%s', a1.join(''), aDelta
 
-  describe 'random', ->
-    for n in [0...1000]
-      entry  = randomEntry alpLen: 12
-      describe "'#{entry.a}', '#{entry.b}'", -> 
-        check entry
+  diff = mDiff a, b, entry.options
+  it "should transform", -> 
+    diff.scanDiff patch
+    expect(a1.join '').to.be.equal entry.b
 
 
+
+
+describe 'mdiff', ->
+
+  randNum = 200
+  alpLen = 12
+
+  describe 'common', ->
+
+    describe 'fix string', ->
+      for entry in entries
+        describe "'#{entry.a}', '#{entry.b}'", -> 
+          checkCommon entry, asArray: false
+
+    describe 'fix array', ->
+      for entry in entries
+        describe "'#{entry.a}', '#{entry.b}'", -> 
+          checkCommon entry, asArray: true
+
+    describe 'random string', ->
+      for n in [0...randNum]
+        entry  = randomEntry alpLen: alpLen
+        describe "'#{entry.a}', '#{entry.b}'", -> 
+          checkCommon entry, asArray: false
+
+    describe 'random array', ->
+      for n in [0...randNum]
+        entry  = randomEntry alpLen: alpLen
+        describe "'#{entry.a}', '#{entry.b}'", -> 
+          checkCommon entry, asArray: true
+
+  describe 'diff', ->
+
+    describe 'fix', ->
+      for entry in entries
+        describe "'#{entry.a}', '#{entry.b}'", -> 
+          checkDiff entry
+
+    describe 'random', ->
+      for n in [0...randNum]
+        entry  = randomEntry maxLen: alpLen
+        describe "'#{entry.a}', '#{entry.b}'", -> 
+          checkDiff entry
 
