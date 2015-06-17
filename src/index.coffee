@@ -4,7 +4,9 @@
 class Diff
   constructor: (@a, @b, options) ->
     # debug 'Lcs(a=%o b=%o)', @a, @b
-    @options = options || {}
+    options = options || {}
+    if options.equal?
+      @equal = options.equal
     
   equal: (aVal, bVal) ->
     aVal == bVal
