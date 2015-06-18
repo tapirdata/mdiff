@@ -108,10 +108,10 @@ randomString = (options) ->
   if not alpLen?
     alpLen = 26
   
-  len = minLen + Math.trunc Math.random() * (maxLen - minLen + 1)  
+  len = minLen + Math.floor Math.random() * (maxLen - minLen + 1)  
   a = new Array len
   for i in [0...len]
-    a[i] = alp[Math.trunc Math.random() * alpLen]
+    a[i] = alp[Math.floor Math.random() * alpLen]
   a.join ''
 
 
