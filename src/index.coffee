@@ -91,17 +91,17 @@ class Diff
         k += 2
       ++d  
 
-  scan: (aBegin, aEnd, bBegin, bEnd, commonCb, maxD) ->
-    # debug 'scan((%o, %o)...(%o, %o) maxD=%o)', aBegin, bBegin, aEnd, bEnd, maxD
+  scan: (aBegin, aEnd, bBegin, bEnd, commonCb, dMax) ->
+    # debug 'scan((%o, %o)...(%o, %o) dMax=%o)', aBegin, bBegin, aEnd, bEnd, dMax
     aLen = aEnd - aBegin
     bLen = bEnd - bBegin
     if aLen == 0 or bLen == 0
       return 0
-    if not maxD?
-      maxD = aLen + bLen
-    maxDh = Math.ceil maxD / 2
+    if not dMax?
+      dMax = aLen + bLen
+    maxDh = Math.ceil dMax / 2
     ms = @findMiddleSnake aBegin, aEnd, bBegin, bEnd, maxDh
-    # debug 'scan: (%o, %o)...(%o, %o) maxD=%o', aBegin, bBegin, aEnd, bEnd, maxD
+    # debug 'scan: (%o, %o)...(%o, %o) dMax=%o', aBegin, bBegin, aEnd, bEnd, dMax
     # debug 'scan: ms=%o', ms
     if not ms?
       return null
@@ -121,7 +121,7 @@ class Diff
           commonCb ms.aS, ms.aE, ms.bS, ms.bE
     else
       @scan aBegin, ms.aS, bBegin, ms.bS, commonCb
-      # debug 'scan: (%o, %o)...(%o, %o) maxD=%o', aBegin, bBegin, aEnd, bEnd, maxD
+      # debug 'scan: (%o, %o)...(%o, %o) dMax=%o', aBegin, bBegin, aEnd, bEnd, dMax
       # debug 'scan: ms=%o', ms
       # debug 'scan: -> %o %o', @a.slice(ms.aS, ms.aE), @b.slice(ms.bS, ms.bE)
       if commonCb and ms.aE > ms.aS
@@ -129,10 +129,12 @@ class Diff
       @scan ms.aE, aEnd, ms.bE, bEnd, commonCb
     return ms.d
 
-  scanCommon: (commonCb, maxD) ->
-    @scan 0, @a.length, 0, @b.length, commonCb, maxD
+  scanCommon: (commonCb, dMax) ->
+    @scan 0, @a.length, 0, @b.length, commonCb, dMax
 
-  scanDiff: (diffCb, maxD) ->
+  scanDiff: (diffCb, dMax) ->
+    if not diffCb
+      return @scanCommon null, dMax
     aIdx = 0
     bIdx = 0
     commonCb = (aS, aE, bS, bE) =>
@@ -140,7 +142,7 @@ class Diff
         diffCb aIdx, aS, bIdx, bS
       aIdx = aE
       bIdx = bE
-    d = @scanCommon commonCb, maxD
+    d = @scanCommon commonCb, dMax
     if d?
       aLen = @a.length  
       bLen = @b.length  
@@ -149,18 +151,22 @@ class Diff
     d     
 
 
-  getLcs: (maxD) ->
-    isString = @a.constructor == String
-    lcs = if isString then '' else []
-    commonCb = (aS, aE) =>
-      part = @a.slice aS, aE
-      if isString
+  getLcs: (dMax) ->
+    if @a.constructor == String
+      lcs = ''
+      commonCb = (aS, aE) =>
+        part = @a.slice aS, aE
         lcs += part
-      else  
+    else  
+      lcs = []
+      commonCb = (aS, aE) =>
+        part = @a.slice aS, aE
         lcs = lcs.concat part
-    d = @scanCommon commonCb, maxD
+    d = @scanCommon commonCb, dMax
     if d?
       lcs
+    else
+      null
 
 
 factory = (a, b, options) ->

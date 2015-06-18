@@ -13,11 +13,11 @@
     "email": "office@tapirdata.com",
     "url": "https://github.com/tapirdata"
   },
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "ssh://and@git.tapirdata.com/data/git/prj/tapirdata/npm/myers-diff.git"
   },
-  "license": "ISC",
   "devDependencies": {
     "chai": "^3.0.0",
     "coffee-script": "^1.9.3",
