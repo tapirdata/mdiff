@@ -1,7 +1,7 @@
 {
   "name": "mdiff",
   "version": "0.2.2",
-  "description": "Eugene W. Myers' O(ND) Difference Algorithm",
+  "description": "An LCS Implementaion for Arrays and Strings",
   "main": "lib",
   "scripts": {
     "test": "mocha --compilers coffee:coffee-script/register",
@@ -24,7 +24,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "ssh://and@git.tapirdata.com/data/git/prj/tapirdata/npm/myers-diff.git"
+    "url": "https://github.com/tapirdata/mdiff"
   },
   "devDependencies": {
     "chai": "^3.0.0",
