@@ -1,6 +1,6 @@
 {
   "name": "mdiff",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Eugene W. Myers' O(ND) Difference Algorithm",
   "main": "index.js",
   "scripts": {
