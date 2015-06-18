@@ -2,12 +2,20 @@
   "name": "mdiff",
   "version": "0.2.1",
   "description": "Eugene W. Myers' O(ND) Difference Algorithm",
-  "main": "index.js",
+  "main": "lib",
   "scripts": {
     "test": "mocha --compilers coffee:coffee-script/register",
     "build": "rm -rf lib; coffee -c -b -o lib src",
     "prepublish": "npm run build"
   },
+  "keywords": [
+    "diff",
+    "lcs",
+    "longest common subsequence",
+    "edit-distance",
+    "array",
+    "string"
+  ],
   "author": {
     "name": "Andreas Riedl",
     "email": "office@tapirdata.com",

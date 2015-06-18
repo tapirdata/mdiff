@@ -1,5 +1,9 @@
 # mdiff [![Build Status](https://secure.travis-ci.org/tapirdata/mdiff.png?branch=master)](https://travis-ci.org/tapirdata/mdiff) [![Dependency Status](https://david-dm.org/tapirdata/mdiff.svg)](https://david-dm.org/tapirdata/mdiff) [![devDependency Status](https://david-dm.org/tapirdata/mdiff/dev-status.svg)](https://david-dm.org/tapirdata/mdiff#info=devDependencies)
-> Eugene W. Myers' O(ND) Difference Algorithm Linear with Space Refinement
+> A Minimalistic Diff Implementation 
+
+Based on the algorithm proposed in
+["An O(ND) Difference Algorithm and its Variations" (Myers, 1986)](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.4.6927).
+Works with Arrays and Strings.
 
 ## Usage
 
@@ -14,15 +18,19 @@ var a = 'ABCABBA';
 var b = 'CBABAC';
 var diff = mdiff(a, b);
 
-var d = diff.scanCommon(function(aS, aE, bS, bE) {
-  console.log("'%s' == '%s'", a.slice(aS, aE), b.slice(bS, bE));
-}); 
-console.log("d=%s", d);
+console.log("lcs='%s'", diff.getLcs());
 
+console.log("Common:");
+var d = diff.scanCommon(function(aS, aE, bS, bE) {
+  console.log("  '%s' == '%s'", a.slice(aS, aE), b.slice(bS, bE));
+}); 
+console.log("edit-distance=%s", d);
+
+console.log("Diff:");
 d = diff.scanDiff(function(aS, aE, bS, bE) {
-  console.log("'%s' -> '%s'", a.slice(aS, aE), b.slice(bS, bE));
+  console.log("  '%s' -> '%s'", a.slice(aS, aE), b.slice(bS, bE));
 });
-console.log("d=%s", d);
+console.log("edit-distance=%s", d);
 
 ```
 ## API
