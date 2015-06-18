@@ -1,6 +1,6 @@
 {
   "name": "mdiff",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Eugene W. Myers' O(ND) Difference Algorithm",
   "main": "lib",
   "scripts": {
