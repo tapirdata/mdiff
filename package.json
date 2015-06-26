@@ -30,5 +30,6 @@
     "chai": "^3.0.0",
     "coffee-script": "^1.9.3",
     "mocha": "^2.2.5"
-  }
+  },
+  "dependencies": {}
 }

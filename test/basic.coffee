@@ -213,3 +213,21 @@ describe 'mdiff', ->
         describe "'#{entry.a}', '#{entry.b}'", -> 
           checkDiff entry
 
+    describe 'custom comperator', ->
+      a = ['alice', 'bob', 'carol', 'Dan']
+      b = ['Alice', 'Bob', 'CAROL', 'eve', 'dan']
+      describe "#{a} #{b}", ->
+        it 'should have an distance of 9 with default compare', ->
+          diff = mDiff a, b
+          expect(diff.scanCommon()).to.be.equal 9
+        it 'should have an distance of 1 with special equal compare', ->
+          diff = mDiff a, b, equal: (aVal, bVal) -> aVal.toUpperCase() == bVal.toUpperCase()
+          expect(diff.scanCommon()).to.be.equal 1
+        it 'should have an distance of 1 with special indexEqual compare', ->
+          aUpper = a.map (x) -> x.toUpperCase
+          bUpper = b.map (x) -> x.toUpperCase
+          diff = mDiff a, b, indexEqual: (aIdx, bIdx) -> aUpper[aIdx] == bUpper[bIdx]
+          expect(diff.scanCommon()).to.be.equal 1
+
+
+

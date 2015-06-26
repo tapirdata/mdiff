@@ -5,11 +5,16 @@ class Diff
   constructor: (@a, @b, options) ->
     # debug 'Lcs(a=%o b=%o)', @a, @b
     options = options || {}
+    if options.indexEqual?
+      @indexEqual = options.indexEqual
     if options.equal?
       @equal = options.equal
     
   equal: (aVal, bVal) ->
     aVal == bVal
+
+  indexEqual: (aIdx, bIdx) ->
+    @equal @a[aIdx], @b[bIdx]
 
   findMiddleSnake: (aBegin, aEnd, bBegin, bEnd, maxDh) ->
     aLen = aEnd - aBegin
@@ -37,7 +42,7 @@ class Diff
         if dirB then ++bS else ++aS
         aE = aS
         bE = bS
-        while aE < aEnd && bE < bEnd && @equal @a[aE], @b[bE]
+        while aE < aEnd && bE < bEnd && @indexEqual aE, bE
           ++aE
           ++bE
         # debug 'findMiddleSnake: (f) (%o, %o) ... (%o, %o)', aS, bS, aE, bE
@@ -69,7 +74,7 @@ class Diff
         if dirB then --bE else --aE
         aS = aE
         bS = bE
-        while aS > aBegin && bS > bBegin && @equal @a[aS - 1] , @b[bS - 1]
+        while aS > aBegin && bS > bBegin && @indexEqual aS - 1, bS - 1
           --aS
           --bS
         # debug 'findMiddleSnake: (b) (%o, %o) ... (%o, %o)', aS, bS, aE, bE

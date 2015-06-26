@@ -40,7 +40,8 @@ console.log("edit-distance=%s", d);
 Creates a diff-object. 
 - `a`, `b` (strings or arrays): the items to be compared.
 - `options`
-  - `equal` (`function(xa, xb)` ): a comparator that determines if two entries are supposed to be equal (default is just `===`).
+  - `equal` (`function(aValue, bValue)` ): a comparator that determines if two entries are supposed to be equal (default is just `===`).
+  - `indexEqual` (`function(aIdx, bIdx)` ): a comparator that determines if entries for two indices are supposed to be equal (default is to compare `a[aIdx]` with `b[bIdx]` by `equal`).
 
   
 #### diff.scanCommon(cb, dMax)
