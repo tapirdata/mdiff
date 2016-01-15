@@ -1,8 +1,9 @@
 language: node_js
 node_js:
-  - "v0.12.7"
-  - "iojs-v2.3.4"
-  - "v4.1.2"
+  - "5.4"
+  - "4.2"
+  - "0.12"
+  - "iojs"
 install:
   - npm install
 
