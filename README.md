@@ -1,4 +1,7 @@
-# mdiff [![Build Status](https://secure.travis-ci.org/tapirdata/mdiff.png?branch=master)](https://travis-ci.org/tapirdata/mdiff) [![Dependency Status](https://david-dm.org/tapirdata/mdiff.svg)](https://david-dm.org/tapirdata/mdiff) [![devDependency Status](https://david-dm.org/tapirdata/mdiff/dev-status.svg)](https://david-dm.org/tapirdata/mdiff#info=devDependencies)
+# mdiff 
+
+[![npm version](https://img.shields.io/npm/v/mdiff.svg?style=flat-square)](https://www.npmjs.com/package/mdiff)
+[![Build Status](https://secure.travis-ci.org/tapirdata/mdiff.png?branch=master)](https://travis-ci.org/tapirdata/mdiff) [![Dependency Status](https://david-dm.org/tapirdata/mdiff.svg)](https://david-dm.org/tapirdata/mdiff) [![devDependency Status](https://david-dm.org/tapirdata/mdiff/dev-status.svg)](https://david-dm.org/tapirdata/mdiff#info=devDependencies)
 > A Minimalistic Diff Implementation 
 
 Based on the algorithm proposed in
@@ -12,26 +15,25 @@ $ npm install mdiff
 ```
 
 ```js
-var mdiff = require('mdiff');
+import mDiff from 'mdiff';
 
-var a = 'ABCABBA';
-var b = 'CBABAC';
-var diff = mdiff(a, b);
+let a = 'ABCABBA';
+let b = 'CBABAC';
+let diff = mDiff(a, b);
 
 console.log("lcs='%s'", diff.getLcs());
 
 console.log("Common:");
-var d = diff.scanCommon(function(aS, aE, bS, bE) {
+var d = diff.scanCommon((aS, aE, bS, bE) => {
   console.log("  '%s' == '%s'", a.slice(aS, aE), b.slice(bS, bE));
 }); 
 console.log("edit-distance=%s", d);
 
 console.log("Diff:");
-d = diff.scanDiff(function(aS, aE, bS, bE) {
+var d = diff.scanDiff((aS, aE, bS, bE) => {
   console.log("  '%s' -> '%s'", a.slice(aS, aE), b.slice(bS, bE));
 });
 console.log("edit-distance=%s", d);
-
 ```
 ## API
 

@@ -3,8 +3,6 @@ node_js:
   - "6.3"
   - "5.4"
   - "4.2"
-  - "0.12"
-  - "iojs"
 install:
   - npm install
 
