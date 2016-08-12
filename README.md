@@ -1,7 +1,9 @@
 # mdiff 
 
 [![npm version](https://img.shields.io/npm/v/mdiff.svg?style=flat-square)](https://www.npmjs.com/package/mdiff)
-[![Build Status](https://secure.travis-ci.org/tapirdata/mdiff.png?branch=master)](https://travis-ci.org/tapirdata/mdiff) [![Dependency Status](https://david-dm.org/tapirdata/mdiff.svg)](https://david-dm.org/tapirdata/mdiff) [![devDependency Status](https://david-dm.org/tapirdata/mdiff/dev-status.svg)](https://david-dm.org/tapirdata/mdiff#info=devDependencies)
+[![Build Status](https://secure.travis-ci.org/tapirdata/mdiff.png?branch=master)](https://travis-ci.org/tapirdata/mdiff)
+[![Dependency Status](https://david-dm.org/tapirdata/mdiff.svg)](https://david-dm.org/tapirdata/mdiff)
+[![devDependency Status](https://david-dm.org/tapirdata/mdiff/dev-status.svg)](https://david-dm.org/tapirdata/mdiff#info=devDependencies)
 > A Minimalistic Diff Implementation 
 
 Based on the algorithm proposed in
