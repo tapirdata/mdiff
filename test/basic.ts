@@ -1,6 +1,6 @@
 import { expect } from "chai"
 
-import mDiff from "../src"
+import mdiff from "../src"
 import { Index, Options, StringOrArray } from "../src"
 import simpleLcsLen from "./simpleLcsLen"
 
@@ -163,7 +163,7 @@ function checkCommon(entry: Entry, options: CheckOptions) {
     })
   }
 
-  const diff = mDiff(a, b, entry.options)
+  const diff = mdiff(a, b, entry.options)
   it("should yield fitting snakes", () => {
     diff.scanCommon(collect)
   })
@@ -188,7 +188,7 @@ function checkDiff(entry: Entry) {
     return aDelta += (bE + aS) - bS - aE
   }
 
-  const diff = mDiff(a, b, entry.options)
+  const diff = mdiff(a, b, entry.options)
   return it("should transform", () => {
     diff.scanDiff(patch)
     return expect(a1.join("")).to.be.equal(entry.b)
@@ -252,17 +252,17 @@ describe("mdiff", () => {
       const b = ["Alice", "Bob", "CAROL", "eve", "dan"]
       describe(`${a} ${b}`, () => {
         it("should have an distance of 9 with default compare", () => {
-          const diff = mDiff(a, b)
+          const diff = mdiff(a, b)
           return expect(diff.scanCommon()).to.be.equal(9)
         })
         it("should have an distance of 1 with special equal compare", () => {
-          const diff = mDiff(a, b, {equal(aVal, bVal) { return aVal.toUpperCase() === bVal.toUpperCase() }})
+          const diff = mdiff(a, b, {equal(aVal, bVal) { return aVal.toUpperCase() === bVal.toUpperCase() }})
           return expect(diff.scanCommon()).to.be.equal(1)
         })
         return it("should have an distance of 1 with special indexEqual compare", () => {
           const aUpper = a.map((x) => x.toUpperCase)
           const bUpper = b.map((x) => x.toUpperCase)
-          const diff = mDiff(a, b, {indexEqual(aIdx, bIdx) { return aUpper[aIdx] === bUpper[bIdx] }})
+          const diff = mdiff(a, b, {indexEqual(aIdx, bIdx) { return aUpper[aIdx] === bUpper[bIdx] }})
           return expect(diff.scanCommon()).to.be.equal(1)
         })
       })

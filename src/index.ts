@@ -6,15 +6,15 @@ export interface Options {
   equal?: (a: any, b: any) => boolean,
 }
 
-export type CommonCb = (aS: Index, aE: Index, bS: Index, bE: Index) => any
-export type DiffCb = (aIdx: Index, aS: Index, bIdx: Index, bS: Index) => any
+export type CommonCb = (aS: Index, aE: Index, bS: Index, bE: Index) => void
+export type DiffCb = (aIdx: Index, aS: Index, bIdx: Index, bS: Index) => void
 
-export class Diff {
+export class Diff<T extends StringOrArray> {
 
-  protected a: StringOrArray
-  protected b: StringOrArray
+  protected a: T
+  protected b: T
 
-  constructor(a: StringOrArray, b: StringOrArray, options: Options = {}) {
+  constructor(a: T, b: T, options: Options = {}) {
     // debug('Diff(a=%o b=%o)', a, b)
     this.a = a
     this.b = b
@@ -54,22 +54,20 @@ export class Diff {
     return d
   }
 
-  public getLcs(dMax?: Index): StringOrArray | null {
-    let lcs: StringOrArray
+  public getLcs(dMax?: Index): T | null {
+    let lcs: T
     let commonCb: CommonCb
     if (typeof(this.a) === "string") {
-      lcs = ""
+      lcs = "" as any
       commonCb = (aS, aE) => {
-        // debug('aS=%o aE=%o', aS, aE);
         const part = this.a.slice(aS, aE)
-        // console.log("aS=", aS, "aE=", aE, "part=", part)
-        lcs = (lcs as string) + part
+        lcs = ((lcs as string) + part) as any
       }
     } else {
-      lcs = []
+      lcs = [] as any
       commonCb = (aS, aE) => {
         const part = this.a.slice(aS, aE)
-        lcs = [...lcs, ...part]
+        lcs = [...lcs, ...part] as any
       }
     }
     const d = this.scanCommon(commonCb, dMax)
@@ -232,7 +230,7 @@ export class Diff {
 
 }
 
-function factory(a: StringOrArray, b: StringOrArray, options?: Options) {
+function factory<T extends StringOrArray>(a: T, b: T, options?: Options) {
   return new Diff(a, b, options)
 }
 

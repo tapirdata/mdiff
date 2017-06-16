@@ -17,22 +17,22 @@ $ npm install mdiff
 ```
 
 ```js
-import mDiff from 'mdiff';
+import mdiff from 'mdiff';
 
 let a = 'ABCABBA';
 let b = 'CBABAC';
-let diff = mDiff(a, b);
+let diff = mdiff(a, b);
 
 console.log("lcs='%s'", diff.getLcs());
 
 console.log("Common:");
-var d = diff.scanCommon((aS, aE, bS, bE) => {
+let d = diff.scanCommon((aS, aE, bS, bE) => {
   console.log("  '%s' == '%s'", a.slice(aS, aE), b.slice(bS, bE));
 }); 
 console.log("edit-distance=%s", d);
 
 console.log("Diff:");
-var d = diff.scanDiff((aS, aE, bS, bE) => {
+d = diff.scanDiff((aS, aE, bS, bE) => {
   console.log("  '%s' -> '%s'", a.slice(aS, aE), b.slice(bS, bE));
 });
 console.log("edit-distance=%s", d);
