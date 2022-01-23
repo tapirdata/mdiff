@@ -1,6 +1,6 @@
 {
   "name": "mdiff",
-  "version": "1.3.1",
+  "version": "1.3.2",
   "description": "An LCS Implementaion for Arrays and Strings",
   "main": "lib",
   "types": "lib/index.d.ts",
