@@ -22,7 +22,7 @@
     "target": "es2016"
   },
   "include": [
-    "src/**/*", "test/**/*", ".eslintrc.js"
+    "src/**/*"
   ]
 }
 
