@@ -5,7 +5,7 @@ module.exports = {
   parserOptions: {
     // eslint-disable-next-line no-undef, @typescript-eslint/no-unsafe-assignment
     tsconfigRootDir: __dirname,
-    project: './tsconfig.json',
+    project: './tsconfig.eslint.json',
     ecmaVersion: 2020,
     sourceType: 'module',
   },
